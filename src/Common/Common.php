@@ -80,13 +80,15 @@ public static function imagelinethick($image, $x1, $y1, $x2, $y2, $color, $thick
 }
 
 public static function makeimger($text = "内容获取失败...",$types,$ids,$fontPath,$by="",$footer=""){
-	$setStyle = '5f574c|FDFCF5'; #设置颜色,也可以开发为页面可选择并传递这个参数
+	$backgroundColorList = ['FDFCF5',];
+	$backgroundColor = array_rand($backgroundColorList,1);
+	$setStyle = '5f574c|'.$backgroundColor; #设置颜色,也可以开发为页面可选择并传递这个参数
 	$haveBrLinker = ""; #超长使用分隔符
 	$userStyle = explode('|', $setStyle); #分开颜色
 	$text = substr($text, 0, 10000); #截取前1024个字符
 	$imgpath = "".$types."/"; #图片存放地址
 
-	if(!is_dir($imgpath)){ 
+	if(!is_dir($imgpath)){
 
 
 throw new \Exception("未找到上传目录");
@@ -94,22 +96,21 @@ throw new \Exception("未找到上传目录");
 	$imgfile =  $imgpath . $ids . '.jpg';
 	if(file_exists($imgfile))
 	{
-	return $imgfile;	
+	return $imgfile;
 	}
 	else
 	{
 	//这里是边框宽度，可传递参数
-	$paddingTop = 100;
-	$paddingLeft = 64;
-	$paddingBottom = 57;
-	$copyrightHeight = 130;
-	
-	$canvasWidth = 659;
-	$canvasHeight = $paddingTop + $paddingBottom + $copyrightHeight;
-	
-	$fontSize = 24;
+	$paddingTop = 2;
+	$paddingLeft = 2;
+	$paddingBottom = 2;
+
+	$canvasWidth = 146;
+	$canvasHeight = 101;
+
+	$fontSize = 12;
 	$lineHeight = intval($fontSize * 3.0);
-	
+
 	$textArr = array();
 	$tempArr = explode("\n", trim($text));
 	$j = 0;
@@ -124,7 +125,7 @@ throw new \Exception("未找到上传目录");
 		$j ++;
 		if($j > 100){ break; }
 	}
-	
+
 	$textLen = count($textArr);
 
 $footerLen = 0;
@@ -143,15 +144,15 @@ $footerLen = 0;
 		$jj ++;
 		if($jj > 100){ break; }
 	}
-	
+
 	$footerLen = count($textArrFooter);
 }
-	
-	$canvasHeight = $lineHeight * $textLen + $canvasHeight+$footerLen*(14*2);
+
+	//$canvasHeight = $lineHeight * $textLen + $canvasHeight+$footerLen*(14*2);
 	$im = imagecreatetruecolor($canvasWidth, $canvasHeight); #定义画布
 	$colorArray = Common::str2rgb($userStyle[1]);
 	imagefill($im, 0, 0, imagecolorallocate($im, $colorArray['red'], $colorArray['green'], $colorArray['blue']));
-	
+
 	$colorArray = Common::str2rgb('#e8e6da');
 	$colorLine = imagecolorallocate($im, $colorArray['red'], $colorArray['green'], $colorArray['blue']);
 	$padding = 50;
@@ -186,11 +187,11 @@ $footerLen = 0;
 		throw new \Exception("未找到字体文件");
 
 	}
-	
+
 	//写入四个随机数
 	$colorArray = Common::str2rgb($userStyle[0]);
 	$fontColor = imagecolorallocate($im, $colorArray['red'], $colorArray['green'], $colorArray['blue']);
-	
+
 	foreach($textArr as $k=>$text){
 		$offset = $paddingTop + $lineHeight * ($k + 1) - intval(($lineHeight-$fontSize) / 2);
 		imagettftext($im, $fontSize, 0, $paddingLeft, $offset, $fontColor, $fontStyle, $text);
@@ -203,9 +204,9 @@ $footerLen = 0;
 	$fontColor = imagecolorallocate($im, 200, 198, 190);
 	imagettftext($im, 16, 0, $paddingLeft, $offset,$fontColor, $fontStyle, $footer);
 	}
-	
 
-	
+
+
 	$offset += 110;
 	$fontColor = imagecolorallocate($im, 200, 198, 190);
 	imagettftext($im, 16, 0, $paddingLeft -25, $offset,$fontColor, $fontStyle, $by);
